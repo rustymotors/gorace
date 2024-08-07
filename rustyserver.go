@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"os/exec"
-	"strings"
 )
 
 func main() {
@@ -35,23 +32,6 @@ func main() {
 		// Send a response
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
-	})
-
-	http.HandleFunc("/run", func(w http.ResponseWriter, r *http.Request) {
-		cmd := exec.Command("rustyserver")
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			fmt.Fprintf(w, "Error: %s", err)
-		} else {
-			fmt.Fprintf(w, "Output: %s", out)
-		}
-	})
-
-	http.HandleFunc("/env", func(w http.ResponseWriter, r *http.Request) {
-		for _, e := range os.Environ() {
-			pair := strings.Split(e, "=")
-			fmt.Fprintf(w, "%s: %s\n", pair[0], pair[1])
-		}
 	})
 
 	http.ListenAndServe(":3000", nil)
