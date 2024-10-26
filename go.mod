@@ -1,3 +1,9 @@
-module rustymotors/server
+module github.com/rustymotors/gorace
 
-go 1.22.6
+go 1.23.2
+
+replace github.com/rustymotors/gorace/internal => ./internal
+
+require github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
+
+require golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
