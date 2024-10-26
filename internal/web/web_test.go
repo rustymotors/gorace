@@ -1,9 +1,8 @@
-package gorace_test
+package web
 
 import (
 	"fmt"
 	"testing"
-	. "github.com/rustymotors/gorace/src"
 )
 
 func TestAuthenticateUser(t *testing.T) {

@@ -1,4 +1,4 @@
-package gorace
+package web
 
 import (
 	"fmt"

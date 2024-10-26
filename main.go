@@ -2,16 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/rustymotors/gorace/src"
 
-
+	"github.com/rustymotors/gorace/internal/web"
 )
-
-
-
-
-
-
 
 // ========================
 // Main function
@@ -24,7 +17,7 @@ func main() {
 	fmt.Println("Server started")
 
 	// Start a web server on port 3000
-	gorace.StartWebServer()
+	web.StartWebServer()
 
 	// List of ports to listen to
 	ports := []string{"8226", "8227", "8228", "7003"}
@@ -34,10 +27,10 @@ func main() {
 	 */
 	for _, port := range ports {
 		// Listen for an incoming connection. Break the loop when a signal is received.
-		gorace.StartListeningOnPort(port)
+		web.StartListeningOnPort(port)
 	}
 
-	go gorace.ListenForKeyboardEvents(ShutdownFlag)
+	go web.ListenForKeyboardEvents(ShutdownFlag)
 
 	// Wait for the shutdown signal
 	<-ShutdownFlag
