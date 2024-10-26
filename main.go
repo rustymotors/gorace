@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/rustymotors/gorace/internal/web"
 )
@@ -14,7 +14,7 @@ func main() {
 
 	var ShutdownFlag = make(chan bool)
 
-	fmt.Println("Server started")
+	log.Println("Server started")
 
 	// Start a web server on port 3000
 	web.StartWebServer()
@@ -35,5 +35,5 @@ func main() {
 	// Wait for the shutdown signal
 	<-ShutdownFlag
 
-	fmt.Println("Server stopped")
+	log.Println("Server stopped")
 }

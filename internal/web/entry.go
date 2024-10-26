@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/eiannone/keyboard"
@@ -55,7 +56,7 @@ func handleGamePacket(conn net.Conn) {
 	_, err := conn.Read(buf)
 
 	if err != nil {
-		fmt.Println("Error reading:", err.Error())
+		log.Println("Error reading:", err.Error())
 	}
 
 	req.Header.Type = buf[0]
@@ -73,14 +74,14 @@ func handleGamePacket(conn net.Conn) {
 		}
 		loginPacket.Data.Username = string(loginPacket.GetData()[:len(loginPacket.GetData())/2])
 		loginPacket.Data.Password = string(loginPacket.GetData()[len(loginPacket.GetData())/2:])
-		fmt.Println("Login packet received")
-		fmt.Println("Username: ", loginPacket.GetUsername())
-		fmt.Println("Password: ", loginPacket.GetPassword())
+		log.Println("Login packet received")
+		log.Println("Username: ", loginPacket.GetUsername())
+		log.Println("Password: ", loginPacket.GetPassword())
 	default:
-		fmt.Println("Unknown packet received")
+		log.Println("Unknown packet received")
 
 		//Print the entire packet as a serialized hex string
-		fmt.Println("Packet: ", fmt.Sprintf("%x", buf))
+		log.Println("Packet: ", fmt.Sprintf("%x", buf))
 
 	}
 
@@ -94,16 +95,16 @@ func StartListeningOnPort(port string) {
 	go func(port string) {
 		ln, err := net.Listen("tcp", ":"+port)
 		if err != nil {
-			fmt.Println("Error listening:", err.Error())
+			log.Println("Error listening:", err.Error())
 			return
 		}
 		defer ln.Close()
-		fmt.Println("Listening on port " + port)
+		log.Println("Listening on port " + port)
 
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
-				fmt.Println("Error accepting: ", err.Error())
+				log.Println("Error accepting: ", err.Error())
 				return
 			}
 			go handleGamePacket(conn)
@@ -127,7 +128,9 @@ func ListenForKeyboardEvents(ShutdownFlag chan bool) {
 			panic(event.Err)
 		}
 		if event.Rune == 'x' {
-			fmt.Println("Shutting down server")
+			log.Println("Shutdown requested by console")
+			log.Println("Shutting down")
+			fmt.Println("Shutting down")
 			ShutdownFlag <- true
 			break
 		}
