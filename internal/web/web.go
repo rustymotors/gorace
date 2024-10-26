@@ -3,6 +3,9 @@ package web
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/rustymotors/gorace/internal/helpers"
+	"github.com/rustymotors/gorace/internal/shard"
 )
 
 func StartWebServer() {
@@ -20,9 +23,11 @@ func StartWebServer() {
 			handleAuthentication(r, w)
 		})
 
-		request.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
+		request.HandleFunc("/ShardList/", func(w http.ResponseWriter, r *http.Request) {
+			shard.HandleShardList(w, r)
 		})
+
+		request.HandleFunc("/", http.NotFound)
 		http.ListenAndServe(":3000", nil)
 	}()
 }
@@ -87,10 +92,8 @@ func (r *AuthLoginResponse) formatResponse() string {
 	}
 }
 
-func writeResponse(w http.ResponseWriter, response string) {
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprint(w, response)
-}
+
+
 
 func handleAuthentication(r *http.Request, w http.ResponseWriter) {
 	username := r.URL.Query().Get("username")
@@ -105,11 +108,11 @@ func handleAuthentication(r *http.Request, w http.ResponseWriter) {
 	if userId > 0 {
 		fmt.Println("User #", userId, " authenticated")
 		authResponse.SetValid("d316cd2dd6bf870893dfbaaf17f965884e")
-		writeResponse(w, authResponse.formatResponse())
+		helpers.WriteResponse(w, authResponse.formatResponse())
 	} else {
 		fmt.Println("User not authenticated")
 		authResponse.SetInvalid("INV-200", "Opps~", "https://www.winehq.com")
-		writeResponse(w, authResponse.formatResponse())
+		helpers.WriteResponse(w, authResponse.formatResponse())
 	}
 
 }
