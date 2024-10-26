@@ -18,9 +18,8 @@ func StartWebServer() {
 			request.ServeHTTP(w, r)
 		})
 
-
 		request.HandleFunc("/AuthLogin", func(w http.ResponseWriter, r *http.Request) {
-			handleAuthentication(r, w)
+			HandleAuthentication(w, r)
 		})
 
 		request.HandleFunc("/ShardList/", func(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +32,11 @@ func StartWebServer() {
 }
 
 type AuthLoginResponse struct {
-	Valid bool
-	Ticket string
+	Valid      bool
+	Ticket     string
 	ReasonCode string
 	ReasonText string
-	ReasonUrl string
+	ReasonUrl  string
 }
 
 func (r *AuthLoginResponse) IsValid() bool {
@@ -92,10 +91,7 @@ func (r *AuthLoginResponse) formatResponse() string {
 	}
 }
 
-
-
-
-func handleAuthentication(r *http.Request, w http.ResponseWriter) {
+func HandleAuthentication(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	password := r.URL.Query().Get("password")
 
@@ -124,6 +120,6 @@ func AuthenticateUser(username string, password string) (userId int) {
 		fmt.Println("User authenticated")
 		userId = 1
 	}
-	
+
 	return userId
 }
