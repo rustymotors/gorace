@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/rustymotors/gorace/internal/web"
+	"github.com/rustymotors/gorace/internal/app"
 )
 
 // ========================

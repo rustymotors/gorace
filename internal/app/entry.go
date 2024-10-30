@@ -6,77 +6,33 @@ import (
 	"net"
 
 	"github.com/eiannone/keyboard"
+	"github.com/rustymotors/gorace/internal/packets"
 )
-
-type GamePacket struct {
-	// Packet header
-	Header struct {
-		// Packet type
-		Type uint8 // 1 byte
-		// Packet size
-		Size uint16 // 2 bytes
-	}
-	// Packet data
-	Data []byte
-}
-
-func (p *GamePacket) GetHeader() uint8 {
-	return p.Header.Type
-}
-
-func (p *GamePacket) GetData() []byte {
-	return p.Data
-}
-
-type GameLoginPacket struct {
-	GamePacket
-	// Packet data
-	Data struct {
-		// User name
-		Username string
-		// Password
-		Password string
-	}
-}
-
-func (p *GameLoginPacket) GetUsername() string {
-	return p.Data.Username
-}
-
-func (p *GameLoginPacket) GetPassword() string {
-	return p.Data.Password
-}
 
 func handleGamePacket(conn net.Conn) {
 	// Make a buffer to hold incoming data.
 	buf := make([]byte, 1024)
 
 	// Read the incoming connection into the buffer.
-	req := GamePacket{}
+	req := packets.GamePacket{}
 	_, err := conn.Read(buf)
 
 	if err != nil {
 		log.Println("Error reading:", err.Error())
 	}
 
-	req.Header.Type = buf[0]
-	req.Header.Size = uint16(buf[1]) | uint16(buf[2])<<8
-	req.Data = buf[3:]
+	req.FromBytes(buf)
 
-	switch req.GetHeader() {
-	case 1:
-		loginPacket := GameLoginPacket{
-			GamePacket: GamePacket{},
-			Data: struct {
-				Username string
-				Password string
-			}{},
-		}
-		loginPacket.Data.Username = string(loginPacket.GetData()[:len(loginPacket.GetData())/2])
-		loginPacket.Data.Password = string(loginPacket.GetData()[len(loginPacket.GetData())/2:])
+	log.Println("Message ID: ", req.MessageId())
+	//Print the entire packet as a serialized hex string
+	log.Println("Packet: ", fmt.Sprintf("%x", buf))
+
+	switch req.MessageId() {
+	case 261: // Login packet
+		loginPacket := packets.GameLoginPacket{}
+		loginPacket.FromGamePacket(req)
 		log.Println("Login packet received")
-		log.Println("Username: ", loginPacket.GetUsername())
-		log.Println("Password: ", loginPacket.GetPassword())
+		log.Println(loginPacket.ToString())
 	default:
 		log.Println("Unknown packet received")
 
